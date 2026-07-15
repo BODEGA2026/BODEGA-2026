@@ -1,0 +1,215 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   TOKENS — Glassmorphism Premium + Neumorphism suave + Fluent
+   Extraídos y refinados a partir del sistema original y Ether UI.
+   Usamos variables CSS + clases @layer en vez de valores arbitrarios
+   de Tailwind (evita el fallo de build ya documentado en el proyecto).
+   ============================================================ */
+:root {
+  --bg-start: #e8edf5;
+  --bg-mid: #dce8f0;
+  --bg-end: #e5dff5;
+
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-bg-strong: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.9);
+  --glass-shadow: 0 8px 32px rgba(100, 120, 180, 0.13);
+  --glass-shadow-hover: 0 12px 40px rgba(100, 120, 180, 0.18);
+
+  --accent: #5b8cf7;
+  --accent-light: #e8efff;
+  --accent-dark: #3a6be8;
+
+  --success: #34c759;
+  --success-light: #e5f9ec;
+  --warning: #ff9f0a;
+  --warning-light: #fff4e0;
+  --danger: #ff3b30;
+  --danger-light: #ffe5e4;
+
+  --ink: #1a1d2e;
+  --ink-secondary: #5a6070;
+  --ink-muted: #9aa3b5;
+
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+
+  --font-sans: "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, monospace;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--ink);
+  background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-mid) 50%, var(--bg-end) 100%);
+  min-height: 100vh;
+}
+
+/* Halo ambiental (mismo efecto que el HTML original) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 10%, rgba(120, 160, 255, 0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 80% 80%, rgba(180, 150, 255, 0.14) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+@layer components {
+  .glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1.5px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glass-shadow);
+  }
+  .glass-panel-strong {
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border: 1.5px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 24px 80px rgba(60, 80, 160, 0.22);
+  }
+
+  .card {
+    @apply glass-panel p-[22px] transition-shadow duration-200;
+  }
+  .card:hover {
+    box-shadow: var(--glass-shadow-hover);
+  }
+
+  .stat-card {
+    @apply glass-panel p-5;
+  }
+
+  /* Neumorphic soft-press — usado en botones qty y toggles */
+  .neu-soft {
+    background: rgba(255, 255, 255, 0.75);
+    box-shadow: 4px 4px 10px rgba(160, 175, 210, 0.25), -4px -4px 10px rgba(255, 255, 255, 0.7);
+  }
+  .neu-soft:active {
+    box-shadow: inset 3px 3px 6px rgba(160, 175, 210, 0.25), inset -3px -3px 6px rgba(255, 255, 255, 0.7);
+  }
+
+  .input-field {
+    @apply w-full outline-none text-[14px] rounded-xl px-3.5 py-2.5 transition-colors;
+    background: rgba(255, 255, 255, 0.75);
+    border: 1.5px solid rgba(200, 215, 235, 0.7);
+    color: var(--ink);
+  }
+  .input-field:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(91, 140, 247, 0.12);
+  }
+
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-[13.5px] font-semibold cursor-pointer transition-all whitespace-nowrap;
+  }
+  .btn-primary {
+    @apply btn text-white;
+    background: var(--accent);
+    box-shadow: 0 4px 14px rgba(91, 140, 247, 0.35);
+  }
+  .btn-primary:hover {
+    background: var(--accent-dark);
+    transform: translateY(-1px);
+  }
+  .btn-success {
+    @apply btn text-white;
+    background: var(--success);
+  }
+  .btn-danger {
+    @apply btn text-white;
+    background: var(--danger);
+  }
+  .btn-warning {
+    @apply btn text-white;
+    background: var(--warning);
+  }
+  .btn-ghost {
+    @apply btn;
+    background: rgba(255, 255, 255, 0.6);
+    color: var(--ink-secondary);
+    border: 1.5px solid rgba(200, 215, 235, 0.7);
+  }
+  .btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.9);
+  }
+  .btn-sm {
+    @apply px-3.5 py-1.5 text-[12.5px];
+  }
+  .btn-xs {
+    @apply px-2.5 py-1 text-[11.5px] rounded-lg;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold;
+  }
+  .badge-success {
+    background: var(--success-light);
+    color: #1a7a35;
+  }
+  .badge-warning {
+    background: var(--warning-light);
+    color: #9a5900;
+  }
+  .badge-danger {
+    background: var(--danger-light);
+    color: #c0281f;
+  }
+  .badge-info {
+    background: var(--accent-light);
+    color: var(--accent-dark);
+  }
+  .badge-neutral {
+    background: rgba(200, 210, 230, 0.4);
+    color: var(--ink-secondary);
+  }
+
+  .nav-item {
+    @apply flex items-center gap-2.5 px-4 py-2.5 rounded-xl mx-2 text-[13.5px] font-medium cursor-pointer transition-all;
+    color: var(--ink-muted);
+  }
+  .nav-item:hover {
+    background: rgba(91, 140, 247, 0.08);
+    color: var(--accent);
+  }
+  .nav-item.active {
+    background: var(--accent-light);
+    color: var(--accent-dark);
+    font-weight: 600;
+  }
+}
+
+/* ============================================================
+   IMPRESIÓN — solo el visor de factura es visible al imprimir
+   ============================================================ */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  [data-print-area],
+  [data-print-area] * {
+    visibility: visible !important;
+  }
+  [data-print-area] {
+    display: block !important;
+    position: fixed !important;
+    inset: 0;
+    width: 100% !important;
+    background: #fff !important;
+    z-index: 99999 !important;
+  }
+  [data-no-print] {
+    display: none !important;
+  }
+}
