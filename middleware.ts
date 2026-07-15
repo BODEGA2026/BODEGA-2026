@@ -7,10 +7,13 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Corre en todo excepto assets estáticos y de imagen.
-     * Ajusta si agregas más carpetas públicas.
-     */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // ⚠️ AUTH TEMPORALMENTE DESACTIVADA ⚠️
+    // Este matcher no coincide con ninguna ruta real, así que el
+    // middleware nunca se ejecuta y /admin queda abierto sin login.
+    // Úsalo solo mientras resuelves el usuario admin en Supabase.
+    //
+    // Para reactivar la protección, reemplaza el array de abajo por:
+    // "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/__disabled_middleware_route_that_never_matches__",
   ],
 };
