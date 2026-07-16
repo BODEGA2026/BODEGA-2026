@@ -13,7 +13,7 @@ function isToday(iso: string) {
   return iso?.slice(0, 10) === new Date().toISOString().slice(0, 10);
 }
 
-export default function ComprasPage() {
+export function ComprasTab() {
   const { sales, purchases, expenses, deletePurchase, deleteExpense } = useAppStore();
   const [purchaseModalOpen, setPurchaseModalOpen] = useState(false);
   const [expenseModalOpen, setExpenseModalOpen] = useState(false);
@@ -66,25 +66,17 @@ export default function ComprasPage() {
   };
 
   return (
-    <div className="space-y-5 pt-2">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="text-[26px] font-bold tracking-tight">Compras y Gastos</h1>
-          <p className="text-[13px]" style={{ color: "var(--ink-muted)" }}>
-            Registro de egresos e ingresos al inventario
-          </p>
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          <button className="btn-primary btn-sm" onClick={() => setPurchaseModalOpen(true)}>
-            <Plus size={14} /> Registrar Compra
-          </button>
-          <button className="btn-danger btn-sm" onClick={() => setExpenseModalOpen(true)}>
-            <Plus size={14} /> Registrar Gasto
-          </button>
-          <button className="btn-ghost btn-sm" onClick={handleExport}>
-            <Download size={14} /> Excel
-          </button>
-        </div>
+    <div className="space-y-5">
+      <div className="flex items-center justify-end flex-wrap gap-2">
+        <button className="btn-primary btn-sm" onClick={() => setPurchaseModalOpen(true)}>
+          <Plus size={14} /> Registrar Compra
+        </button>
+        <button className="btn-danger btn-sm" onClick={() => setExpenseModalOpen(true)}>
+          <Plus size={14} /> Registrar Gasto
+        </button>
+        <button className="btn-ghost btn-sm" onClick={handleExport}>
+          <Download size={14} /> Excel
+        </button>
       </div>
 
       {/* Cierre de caja */}

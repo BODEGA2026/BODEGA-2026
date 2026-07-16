@@ -1,8 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Save } from "lucide-react";
 import { useAppStore } from "@/lib/store/useAppStore";
 import { fmt } from "@/lib/finance";
+import { toast } from "@/lib/store/useToastStore";
+import type { Currency } from "@/lib/types";
 
 type RateKey = "binance" | "euro_bcv" | "dolar_bcv";
 
@@ -12,8 +15,46 @@ const RATE_LABELS: Record<RateKey, string> = {
   dolar_bcv: "Dólar BCV",
 };
 
-export default function CalculadoraPage() {
-  const rates = useAppStore((s) => s.rates);
+const CURRENCY_OPTIONS: { value: Currency; label: string }[] = [
+  { value: "USD", label: "USD — Dólar" },
+  { value: "EUR", label: "EUR — Euro BCV" },
+  { value: "BCVUSD", label: "BCV — Dólar BCV" },
+  { value: "BINANCE", label: "BIN — Binance" },
+  { value: "VES", label: "VES — Bolívares" },
+];
+
+export default function TasasPage() {
+  const { rates, saveRates } = useAppStore();
+
+  // Formulario de edición de tasas — esta es la fuente central que
+  // usa todo el sistema (POS, Inventario, Financiero, etc.)
+  const [form, setForm] = useState({ binance: "", euro_bcv: "", dolar_bcv: "", global_currency: "USD" as Currency });
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (rates) {
+      setForm({
+        binance: rates.binance ? String(rates.binance) : "",
+        euro_bcv: rates.euro_bcv ? String(rates.euro_bcv) : "",
+        dolar_bcv: rates.dolar_bcv ? String(rates.dolar_bcv) : "",
+        global_currency: rates.global_currency,
+      });
+    }
+  }, [rates]);
+
+  const handleSaveRates = async () => {
+    setSaving(true);
+    await saveRates({
+      binance: parseFloat(form.binance) || 0,
+      euro_bcv: parseFloat(form.euro_bcv) || 0,
+      dolar_bcv: parseFloat(form.dolar_bcv) || 0,
+      global_currency: form.global_currency,
+    });
+    setSaving(false);
+    toast("Tasas actualizadas — se aplican en todo el sistema", "success");
+  };
+
+  // Calculadora de diferencial (usa las tasas ya guardadas del store)
   const [priceUsd, setPriceUsd] = useState("");
   const [rateIn, setRateIn] = useState<RateKey>("binance");
   const [rateOut, setRateOut] = useState<RateKey>("euro_bcv");
@@ -36,10 +77,40 @@ export default function CalculadoraPage() {
   return (
     <div className="space-y-5 pt-2">
       <div>
-        <h1 className="text-[26px] font-bold tracking-tight">Calculadora Cambiaria</h1>
+        <h1 className="text-[26px] font-bold tracking-tight">Calculadora / Tasas</h1>
         <p className="text-[13px]" style={{ color: "var(--ink-muted)" }}>
-          Conversión con diferencial de tasas
+          Tasas de cambio centrales del sistema y conversión con diferencial
         </p>
+      </div>
+
+      {/* Edición central de tasas — se refleja en todo el sistema */}
+      <div className="card" style={{ borderColor: "rgba(91,140,247,0.25)", borderWidth: 2 }}>
+        <h3 className="text-[14px] font-semibold uppercase tracking-wide mb-1" style={{ color: "var(--ink-secondary)" }}>
+          💱 Tasas de Cambio del Sistema
+        </h3>
+        <p className="text-[12px] mb-4" style={{ color: "var(--ink-muted)" }}>
+          Estos valores se usan en Ventas/POS, Inventario, Financiero, Facturación y aquí mismo. También puedes editarlos rápido desde el encabezado superior.
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 items-end">
+          <Field label="Dólar Binance (Bs.)" value={form.binance} onChange={(v) => setForm({ ...form, binance: v })} />
+          <Field label="Euro BCV (Bs.)" value={form.euro_bcv} onChange={(v) => setForm({ ...form, euro_bcv: v })} />
+          <Field label="Dólar BCV (Bs.)" value={form.dolar_bcv} onChange={(v) => setForm({ ...form, dolar_bcv: v })} />
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[12px] font-semibold" style={{ color: "var(--ink-secondary)" }}>Moneda de Cobro Global</label>
+            <select
+              className="input-field"
+              value={form.global_currency}
+              onChange={(e) => setForm({ ...form, global_currency: e.target.value as Currency })}
+            >
+              {CURRENCY_OPTIONS.map((c) => (
+                <option key={c.value} value={c.value}>{c.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <button className="btn-primary mt-4" disabled={saving} style={{ opacity: saving ? 0.7 : 1 }} onClick={handleSaveRates}>
+          <Save size={15} /> {saving ? "Guardando..." : "Guardar Tasas"}
+        </button>
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">
@@ -48,7 +119,7 @@ export default function CalculadoraPage() {
           style={{ background: "linear-gradient(135deg, rgba(91,140,247,0.12) 0%, rgba(139,96,255,0.10) 100%)", borderColor: "rgba(91,140,247,0.2)", borderWidth: 2 }}
         >
           <h3 className="text-[14px] font-semibold uppercase tracking-wide mb-5" style={{ color: "var(--ink-secondary)" }}>
-            ⚙️ Parámetros de Cálculo
+            ⚙️ Calculadora de Diferencial Cambiario
           </h3>
 
           <div className="flex flex-col gap-1.5 mb-4">
@@ -123,43 +194,27 @@ export default function CalculadoraPage() {
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="card">
-            <h3 className="text-[14px] font-semibold uppercase tracking-wide mb-3" style={{ color: "var(--ink-secondary)" }}>
-              📊 Tasas Actuales
-            </h3>
-            <div className="flex flex-col divide-y divide-black/5">
-              {(Object.keys(RATE_LABELS) as RateKey[]).map((k) => {
-                const emoji = k === "euro_bcv" ? "💶" : "💵";
-                const v = rates?.[k] || 0;
-                return (
-                  <div key={k} className="flex items-center justify-between py-2.5">
-                    <span className="text-[14px]">{emoji} {RATE_LABELS[k]}</span>
-                    {v > 0 ? (
-                      <span className="text-[15px] font-bold" style={{ fontFamily: "var(--font-mono)", color: "var(--accent)" }}>
-                        Bs. {fmt(v)}
-                      </span>
-                    ) : (
-                      <span className="text-[13px]" style={{ color: "var(--ink-muted)" }}>No configurada</span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="card">
-            <h3 className="text-[14px] font-semibold uppercase tracking-wide mb-3" style={{ color: "var(--ink-secondary)" }}>
-              💡 Cómo funciona
-            </h3>
-            <div className="text-[13px] leading-relaxed space-y-3" style={{ color: "var(--ink-secondary)" }}>
-              <p><strong>Paso 1:</strong> Precio USD × Tasa Entrada = Bolívares.</p>
-              <p><strong>Paso 2:</strong> Bolívares ÷ Tasa Salida = Precio de cobro.</p>
-              <p><strong>Diferencial:</strong> Si Tasa Entrada &gt; Tasa Salida, generas ganancia cambiaria adicional.</p>
-            </div>
+        <div className="card">
+          <h3 className="text-[14px] font-semibold uppercase tracking-wide mb-3" style={{ color: "var(--ink-secondary)" }}>
+            💡 Cómo funciona
+          </h3>
+          <div className="text-[13px] leading-relaxed space-y-3" style={{ color: "var(--ink-secondary)" }}>
+            <p><strong>Tasas:</strong> lo que guardes arriba se usa automáticamente en todo el sistema — POS, Inventario, Financiero y Facturación.</p>
+            <p><strong>Paso 1:</strong> Precio USD × Tasa Entrada = Bolívares.</p>
+            <p><strong>Paso 2:</strong> Bolívares ÷ Tasa Salida = Precio de cobro.</p>
+            <p><strong>Diferencial:</strong> Si Tasa Entrada &gt; Tasa Salida, generas ganancia cambiaria adicional.</p>
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function Field({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="text-[12px] font-semibold" style={{ color: "var(--ink-secondary)" }}>{label}</label>
+      <input type="number" step="0.01" className="input-field" placeholder="0.00" value={value} onChange={(e) => onChange(e.target.value)} />
     </div>
   );
 }

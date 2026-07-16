@@ -3,24 +3,26 @@
 import { useEffect, useState } from "react";
 import { useAppStore } from "@/lib/store/useAppStore";
 import { useBIStore } from "@/lib/store/useBIStore";
-import { CargaMasivaTab } from "./CargaMasivaTab";
 import { KPIsTab } from "./KPIsTab";
 import { MetasTab } from "./MetasTab";
 import { TendenciasTab } from "./TendenciasTab";
 import { AlertasTab } from "./AlertasTab";
+import { MarketingTab } from "./MarketingTab";
+import { EstadisticasTab } from "./EstadisticasTab";
 
 const TABS = [
-  { id: "carga", label: "📥 Carga Masiva" },
   { id: "kpis", label: "📊 KPIs en Tiempo Real" },
+  { id: "estadisticas", label: "📈 Estadísticas" },
+  { id: "marketing", label: "📣 Marketing" },
   { id: "metas", label: "🎯 Metas" },
-  { id: "tendencias", label: "📈 Tendencias" },
+  { id: "tendencias", label: "📉 Tendencias" },
   { id: "alertas", label: "🚨 Alertas" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
 
 export default function InteligenciaPage() {
-  const [tab, setTab] = useState<TabId>("carga");
+  const [tab, setTab] = useState<TabId>("kpis");
   const loadBI = useBIStore((s) => s.loadBI);
   const { products, sales } = useAppStore();
   const generateAlerts = useBIStore((s) => s.generateAlerts);
@@ -39,7 +41,7 @@ export default function InteligenciaPage() {
       <div>
         <h1 className="text-[26px] font-bold tracking-tight">Inteligencia de Negocios</h1>
         <p className="text-[13px]" style={{ color: "var(--ink-muted)" }}>
-          Módulo autónomo · Carga masiva, KPIs, metas, tendencias y alertas
+          KPIs, estadísticas, marketing, metas, tendencias y alertas
         </p>
       </div>
 
@@ -61,8 +63,9 @@ export default function InteligenciaPage() {
         ))}
       </div>
 
-      {tab === "carga" && <CargaMasivaTab />}
       {tab === "kpis" && <KPIsTab />}
+      {tab === "estadisticas" && <EstadisticasTab />}
+      {tab === "marketing" && <MarketingTab />}
       {tab === "metas" && <MetasTab />}
       {tab === "tendencias" && <TendenciasTab />}
       {tab === "alertas" && <AlertasTab />}

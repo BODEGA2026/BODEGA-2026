@@ -23,7 +23,7 @@ function monthKey(iso: string) {
   return d.toLocaleDateString("es-VE", { month: "short", year: "2-digit" });
 }
 
-export default function FinancieroPage() {
+export function FinancieroTab() {
   const sales = useAppStore((s) => s.sales);
   const [from, setFrom] = useState(() => new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10));
   const [to, setTo] = useState(() => new Date().toISOString().slice(0, 10));
@@ -77,24 +77,16 @@ export default function FinancieroPage() {
   };
 
   return (
-    <div className="space-y-5 pt-2">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="text-[26px] font-bold tracking-tight">Resumen Financiero</h1>
-          <p className="text-[13px]" style={{ color: "var(--ink-muted)" }}>
-            Ingresos, egresos y rentabilidad
-          </p>
-        </div>
-        <div className="flex gap-2 flex-wrap items-center">
-          <input type="date" className="input-field !w-[150px]" value={from} onChange={(e) => setFrom(e.target.value)} />
-          <input type="date" className="input-field !w-[150px]" value={to} onChange={(e) => setTo(e.target.value)} />
-          <button className="btn-primary btn-sm" onClick={() => setApplied({ from, to })}>
-            Filtrar
-          </button>
-          <button className="btn-ghost btn-sm" onClick={handleExport}>
-            <Download size={14} /> Excel
-          </button>
-        </div>
+    <div className="space-y-5">
+      <div className="flex items-center justify-end flex-wrap gap-2">
+        <input type="date" className="input-field !w-[150px]" value={from} onChange={(e) => setFrom(e.target.value)} />
+        <input type="date" className="input-field !w-[150px]" value={to} onChange={(e) => setTo(e.target.value)} />
+        <button className="btn-primary btn-sm" onClick={() => setApplied({ from, to })}>
+          Filtrar
+        </button>
+        <button className="btn-ghost btn-sm" onClick={handleExport}>
+          <Download size={14} /> Excel
+        </button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

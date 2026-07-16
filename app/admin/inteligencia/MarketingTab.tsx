@@ -14,7 +14,7 @@ import type { Client } from "@/lib/types";
 
 type Filter = "all" | "active" | "inactive";
 
-export default function MarketingPage() {
+export function MarketingTab() {
   const { clients, deleteClient } = useAppStore();
   const [filter, setFilter] = useState<Filter>("all");
   const [clientModalOpen, setClientModalOpen] = useState(false);
@@ -60,22 +60,14 @@ export default function MarketingPage() {
   };
 
   return (
-    <div className="space-y-5 pt-2">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="text-[26px] font-bold tracking-tight">Marketing</h1>
-          <p className="text-[13px]" style={{ color: "var(--ink-muted)" }}>
-            Gestión de clientes y campañas
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <button className="btn-primary btn-sm" onClick={openNew}>
-            <Plus size={14} /> Nuevo Cliente
-          </button>
-          <button className="btn-ghost btn-sm" onClick={handleExport}>
-            <Download size={14} /> Excel
-          </button>
-        </div>
+    <div className="space-y-5">
+      <div className="flex items-center justify-end flex-wrap gap-2">
+        <button className="btn-primary btn-sm" onClick={openNew}>
+          <Plus size={14} /> Nuevo Cliente
+        </button>
+        <button className="btn-ghost btn-sm" onClick={handleExport}>
+          <Download size={14} /> Excel
+        </button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

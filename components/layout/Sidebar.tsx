@@ -3,12 +3,9 @@
 import {
   LayoutDashboard,
   ShoppingCart,
+  Zap,
   Package,
-  ShoppingBag,
   Landmark,
-  Wallet,
-  Megaphone,
-  LineChart,
   Calculator,
   Receipt,
   BrainCircuit,
@@ -18,17 +15,15 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useAppStore } from "@/lib/store/useAppStore";
 
 const NAV_ITEMS = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/ventas", label: "Ventas / POS", icon: ShoppingCart },
-  { href: "/admin/inventario", label: "Inventario", icon: Package },
-  { href: "/admin/compras", label: "Compras / Gastos", icon: ShoppingBag },
-  { href: "/admin/cuentas", label: "Cuentas", icon: Landmark },
-  { href: "/admin/financiero", label: "Financiero", icon: Wallet },
-  { href: "/admin/marketing", label: "Marketing", icon: Megaphone },
-  { href: "/admin/estadisticas", label: "Estadísticas", icon: LineChart },
-  { href: "/admin/calculadora", label: "Calculadora", icon: Calculator },
+  { href: "/admin/venta-rapida", label: "Venta Rápida", icon: Zap },
+  { href: "/admin/inventario", label: "Inventario y Compras", icon: Package },
+  { href: "/admin/cuentas", label: "Cuentas y Financiero", icon: Landmark },
+  { href: "/admin/tasas", label: "Calculadora / Tasas", icon: Calculator },
   { href: "/admin/facturacion", label: "Facturación", icon: Receipt },
   { href: "/admin/inteligencia", label: "Inteligencia de Negocios", icon: BrainCircuit },
   { href: "/admin/config", label: "Configuración", icon: Settings },
@@ -43,6 +38,7 @@ export function Sidebar({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const business = useAppStore((s) => s.business);
 
   const handleLogout = async () => {
     const supabase = createClient();
@@ -50,6 +46,8 @@ export function Sidebar({
     router.push("/login");
     router.refresh();
   };
+
+  const systemName = business?.name || "Mi Negocio";
 
   return (
     <aside
@@ -59,13 +57,11 @@ export function Sidebar({
       style={{ borderRadius: 0 }}
     >
       <div className="px-5 pb-5 mb-3 border-b border-white/50">
-        <h1 className="text-[15px] font-bold tracking-tight leading-tight">
-          Anthony Rivera <span style={{ color: "var(--accent)" }}>Godoy</span>
+        <h1 className="text-[15px] font-bold tracking-tight leading-tight line-clamp-2">
+          {systemName}
         </h1>
         <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "var(--ink-muted)" }}>
-          Sistema Facturación
-          <br />
-          Desechables y Ropa
+          Sistema Facturación · Panel Admin
         </p>
       </div>
 
@@ -82,9 +78,6 @@ export function Sidebar({
       </nav>
 
       <div className="pt-4 mt-2 border-t border-white/50 flex flex-col gap-2 px-2">
-        <Link href="/admin/config" onClick={onNavigate} className="btn-ghost btn-sm justify-center">
-          <Settings size={14} /> Backup / Config
-        </Link>
         <button onClick={handleLogout} className="btn-ghost btn-sm justify-center" style={{ color: "var(--danger)" }}>
           <LogOut size={14} /> Cerrar sesión
         </button>

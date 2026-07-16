@@ -10,7 +10,7 @@ import { exportToExcel } from "@/lib/excel";
 
 const BAR_COLORS = ["#5b8cf7", "#34c759", "#ff9f0a", "#ff3b30", "#8b60ff", "#00bcd4", "#e91e8c", "#ff6b35"];
 
-export default function EstadisticasPage() {
+export function EstadisticasTab() {
   const { sales, products } = useAppStore();
 
   const completedSales = sales.filter((s) => s.status === "completed");
@@ -63,14 +63,8 @@ export default function EstadisticasPage() {
   };
 
   return (
-    <div className="space-y-5 pt-2">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="text-[26px] font-bold tracking-tight">Estadísticas</h1>
-          <p className="text-[13px]" style={{ color: "var(--ink-muted)" }}>
-            Indicadores de rendimiento
-          </p>
-        </div>
+    <div className="space-y-5">
+      <div className="flex items-center justify-end">
         <button className="btn-ghost btn-sm" onClick={handleExport}>
           <Download size={14} /> Exportar
         </button>

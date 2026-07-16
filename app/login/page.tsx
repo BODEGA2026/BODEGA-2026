@@ -38,10 +38,10 @@ function LoginForm() {
             <LayoutDashboard size={22} color="#fff" />
           </div>
           <h1 className="text-[17px] font-bold tracking-tight">
-            Anthony Rivera <span style={{ color: "var(--accent)" }}>Godoy</span>
+            Panel Administrativo
           </h1>
           <p className="text-[11.5px] mt-1" style={{ color: "var(--ink-muted)" }}>
-            Sistema Facturación · Panel Admin
+            Sistema Facturación · Inicia sesión para continuar
           </p>
         </div>
 
