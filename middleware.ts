@@ -1,19 +1,18 @@
-import { type NextRequest } from "next/server";
-import { updateSession } from "@/lib/supabase/middleware";
+import { type NextRequest, NextResponse } from "next/server";
 
-export async function middleware(request: NextRequest) {
-  return updateSession(request);
+/**
+ * Autenticación DESACTIVADA PERMANENTEMENTE por decisión del negocio.
+ * El panel /admin queda accesible sin login para cualquiera con el link.
+ *
+ * Si en el futuro quieres volver a proteger el panel, la forma correcta
+ * es restaurar la llamada a updateSession() desde
+ * lib/supabase/middleware.ts (ese archivo puede quedarse en el proyecto
+ * sin usarse, no rompe nada por sí solo).
+ */
+export function middleware(_request: NextRequest) {
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    // ⚠️ AUTH TEMPORALMENTE DESACTIVADA ⚠️
-    // Este matcher no coincide con ninguna ruta real, así que el
-    // middleware nunca se ejecuta y /admin queda abierto sin login.
-    // Úsalo solo mientras resuelves el usuario admin en Supabase.
-    //
-    // Para reactivar la protección, reemplaza el array de abajo por:
-    // "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-    "/__disabled_middleware_route_that_never_matches__",
-  ],
+  matcher: [],
 };
