@@ -74,9 +74,11 @@ export function ProductModal({
     // Si el costo sube, guarda el costo anterior (misma lógica que el original)
     if (product && cost > product.cost) payload.previous_cost = product.cost;
 
-    await upsertProduct(payload);
-    toast(product ? "Producto actualizado" : "Producto agregado", "success");
-    onClose();
+    const ok = await upsertProduct(payload);
+    if (ok) {
+      toast(product ? "Producto actualizado" : "Producto agregado", "success");
+      onClose();
+    }
   };
 
   return (

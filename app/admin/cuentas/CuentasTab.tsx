@@ -21,13 +21,14 @@ export function CuentasTab() {
   const overdueCount = cxc.filter((a) => a.status !== "paid" && a.due_date && new Date(a.due_date) < new Date()).length;
 
   const handleMarkPaid = async (id: string) => {
-    await markAccountPaid(id);
-    toast("Marcada como pagada", "success");
+    const ok = await markAccountPaid(id);
+    if (ok) toast("Marcada como pagada", "success");
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("¿Eliminar?")) return;
     await deleteAccount(id);
+    // el store ya muestra el error si falla
   };
 
   const handleExport = () => {

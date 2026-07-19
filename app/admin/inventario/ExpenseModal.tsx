@@ -30,10 +30,12 @@ export function ExpenseModal({ open, onClose }: { open: boolean; onClose: () => 
       toast("Completa los campos obligatorios", "warning");
       return;
     }
-    await addExpense({ concept: concept.trim(), category, amount: amt, expense_date: date, notes });
-    toast("Gasto registrado", "success");
-    reset();
-    onClose();
+    const ok = await addExpense({ concept: concept.trim(), category, amount: amt, expense_date: date, notes });
+    if (ok) {
+      toast("Gasto registrado", "success");
+      reset();
+      onClose();
+    }
   };
 
   return (

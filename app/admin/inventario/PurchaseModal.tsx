@@ -35,7 +35,7 @@ export function PurchaseModal({ open, onClose }: { open: boolean; onClose: () =>
       return;
     }
     const selectedProduct = products.find((p) => p.id === productId);
-    await addPurchase({
+    const ok = await addPurchase({
       purchase_date: date,
       supplier: supplier.trim(),
       product_id: productId || null,
@@ -44,9 +44,11 @@ export function PurchaseModal({ open, onClose }: { open: boolean; onClose: () =>
       unit_cost: cost,
       notes,
     });
-    toast("✅ Compra registrada. Stock actualizado.", "success");
-    reset();
-    onClose();
+    if (ok) {
+      toast("✅ Compra registrada. Stock actualizado.", "success");
+      reset();
+      onClose();
+    }
   };
 
   return (

@@ -29,8 +29,8 @@ export function PendingSalesList() {
       applyIva: sale.apply_iva,
     });
     setField("payment", sale.payment_method || "Efectivo USD");
-    await deletePendingSale(id);
-    toast("Venta cargada. Confirma el pago.", "info");
+    const ok = await deletePendingSale(id);
+    if (ok) toast("Venta cargada. Confirma el pago.", "info");
   };
 
   const handleDelete = async (id: string) => {

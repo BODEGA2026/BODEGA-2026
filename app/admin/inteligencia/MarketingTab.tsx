@@ -40,8 +40,8 @@ export function MarketingTab() {
   };
   const handleDelete = async (c: Client) => {
     if (!confirm(`¿Eliminar cliente "${c.name}"?`)) return;
-    await deleteClient(c.id);
-    toast("Cliente eliminado", "info");
+    const ok = await deleteClient(c.id);
+    if (ok) toast("Cliente eliminado", "info");
   };
 
   const handleExport = () => {

@@ -34,10 +34,12 @@ export function AccountModal({
       toast("Completa los campos", "warning");
       return;
     }
-    await addAccount({ type, entity: entity.trim(), amount: amt, due_date: dueDate || null, notes });
-    toast(`${type} registrada`, "success");
-    reset();
-    onClose();
+    const ok = await addAccount({ type, entity: entity.trim(), amount: amt, due_date: dueDate || null, notes });
+    if (ok) {
+      toast(`${type} registrada`, "success");
+      reset();
+      onClose();
+    }
   };
 
   return (

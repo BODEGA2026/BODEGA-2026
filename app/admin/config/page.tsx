@@ -39,8 +39,8 @@ export default function ConfigPage() {
   }, [business]);
 
   const handleSaveBusiness = async () => {
-    await saveBusiness(form);
-    toast("Configuración guardada", "success");
+    const ok = await saveBusiness(form);
+    if (ok) toast("Configuración guardada", "success");
   };
 
   const handleExportBackup = async () => {

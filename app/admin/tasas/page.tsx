@@ -44,14 +44,14 @@ export default function TasasPage() {
 
   const handleSaveRates = async () => {
     setSaving(true);
-    await saveRates({
+    const ok = await saveRates({
       binance: parseFloat(form.binance) || 0,
       euro_bcv: parseFloat(form.euro_bcv) || 0,
       dolar_bcv: parseFloat(form.dolar_bcv) || 0,
       global_currency: form.global_currency,
     });
     setSaving(false);
-    toast("Tasas actualizadas — se aplican en todo el sistema", "success");
+    if (ok) toast("Tasas actualizadas — se aplican en todo el sistema", "success");
   };
 
   // Calculadora de diferencial (usa las tasas ya guardadas del store)

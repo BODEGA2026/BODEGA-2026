@@ -27,7 +27,7 @@ export function ClientModal({ open, onClose, client }: { open: boolean; onClose:
       toast("Nombre requerido", "warning");
       return;
     }
-    await upsertClient({
+    const ok = await upsertClient({
       id: client?.id,
       name: name.trim(),
       phone: phone || null,
@@ -36,8 +36,10 @@ export function ClientModal({ open, onClose, client }: { open: boolean; onClose:
       notes: notes || null,
       ...(client ? {} : { total_bought: 0, purchases_count: 0 }),
     });
-    toast("Cliente guardado", "success");
-    onClose();
+    if (ok) {
+      toast("Cliente guardado", "success");
+      onClose();
+    }
   };
 
   return (

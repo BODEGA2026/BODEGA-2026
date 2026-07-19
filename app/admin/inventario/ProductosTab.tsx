@@ -47,8 +47,8 @@ export function ProductosTab() {
 
   const handleDelete = async (p: Product) => {
     if (!confirm(`¿Eliminar "${p.name}"?`)) return;
-    await deleteProduct(p.id);
-    toast("Producto eliminado", "info");
+    const ok = await deleteProduct(p.id);
+    if (ok) toast("Producto eliminado", "info");
   };
 
   const handleExport = () => {

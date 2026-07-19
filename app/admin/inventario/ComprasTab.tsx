@@ -31,14 +31,14 @@ export function ComprasTab() {
 
   const handleDeletePurchase = async (id: string) => {
     if (!confirm("¿Eliminar esta compra? El stock NO se revertirá automáticamente.")) return;
-    await deletePurchase(id);
-    toast("Compra eliminada", "info");
+    const ok = await deletePurchase(id);
+    if (ok) toast("Compra eliminada", "info");
   };
 
   const handleDeleteExpense = async (id: string) => {
     if (!confirm("¿Eliminar este gasto?")) return;
-    await deleteExpense(id);
-    toast("Gasto eliminado", "info");
+    const ok = await deleteExpense(id);
+    if (ok) toast("Gasto eliminado", "info");
   };
 
   const handleExport = () => {
