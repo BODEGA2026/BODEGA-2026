@@ -30,6 +30,11 @@ interface AppState {
   expenses: Expense[];
   accounts: Account[];
 
+  /** Totales reales en la base de datos — pueden ser mayores a los arrays de arriba si se alcanzó el límite de carga. */
+  salesTotalCount: number;
+  purchasesTotalCount: number;
+  expensesTotalCount: number;
+
   loadAll: () => Promise<void>;
 
   saveRates: (patch: Partial<ExchangeRates>) => Promise<boolean>;
@@ -88,10 +93,21 @@ export const useAppStore = create<AppState>((set, get) => ({
   purchases: [],
   expenses: [],
   accounts: [],
+  salesTotalCount: 0,
+  purchasesTotalCount: 0,
+  expensesTotalCount: 0,
 
   loadAll: async () => {
     const supabase = createClient();
     set({ loading: true });
+
+    // Límites de carga: generosos, pero acotados para no traer un payload
+    // gigantesco de una sola vez. Si el negocio los supera, salesTotalCount
+    // (etc.) queda por encima del tamaño del array cargado, y la UI puede
+    // avisarlo en vez de mostrar reportes incompletos en silencio.
+    const SALES_LIMIT = 3000;
+    const PURCHASES_LIMIT = 2000;
+    const EXPENSES_LIMIT = 2000;
 
     const [business, rates, products, clients, sales, purchases, expenses, accounts] =
       await Promise.all([
@@ -99,9 +115,9 @@ export const useAppStore = create<AppState>((set, get) => ({
         supabase.from("exchange_rates").select("*").limit(1).maybeSingle(),
         supabase.from("products").select("*").order("name"),
         supabase.from("clients").select("*").order("name"),
-        supabase.from("sales").select("*").order("created_at", { ascending: false }).limit(500),
-        supabase.from("purchases").select("*").order("created_at", { ascending: false }).limit(300),
-        supabase.from("expenses").select("*").order("created_at", { ascending: false }).limit(300),
+        supabase.from("sales").select("*", { count: "exact" }).order("created_at", { ascending: false }).limit(SALES_LIMIT),
+        supabase.from("purchases").select("*", { count: "exact" }).order("created_at", { ascending: false }).limit(PURCHASES_LIMIT),
+        supabase.from("expenses").select("*", { count: "exact" }).order("created_at", { ascending: false }).limit(EXPENSES_LIMIT),
         supabase.from("accounts").select("*").order("created_at", { ascending: false }),
       ]);
 
@@ -133,6 +149,9 @@ export const useAppStore = create<AppState>((set, get) => ({
       purchases: (purchases.data ?? []) as Purchase[],
       expenses: (expenses.data ?? []) as Expense[],
       accounts: (accounts.data ?? []) as Account[],
+      salesTotalCount: sales.count ?? (sales.data ?? []).length,
+      purchasesTotalCount: purchases.count ?? (purchases.data ?? []).length,
+      expensesTotalCount: expenses.count ?? (expenses.data ?? []).length,
       loading: false,
     });
   },
@@ -276,7 +295,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       reportError("venta pendiente", error);
       return false;
     }
-    set({ sales: [data as Sale, ...get().sales] });
+    set({ sales: [data as Sale, ...get().sales], salesTotalCount: get().salesTotalCount + 1 });
     return true;
   },
 
@@ -287,7 +306,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       reportError("eliminar venta pendiente", error);
       return false;
     }
-    set({ sales: get().sales.filter((s) => s.id !== id) });
+    set({ sales: get().sales.filter((s) => s.id !== id), salesTotalCount: Math.max(0, get().salesTotalCount - 1) });
     return true;
   },
 
@@ -334,7 +353,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       reportError("eliminar compra", error);
       return false;
     }
-    set({ purchases: get().purchases.filter((p) => p.id !== id) });
+    set({ purchases: get().purchases.filter((p) => p.id !== id), purchasesTotalCount: Math.max(0, get().purchasesTotalCount - 1) });
     return true;
   },
 
@@ -345,7 +364,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       reportError("gasto", error);
       return false;
     }
-    set({ expenses: [data as Expense, ...get().expenses] });
+    set({ expenses: [data as Expense, ...get().expenses], expensesTotalCount: get().expensesTotalCount + 1 });
     return true;
   },
 
@@ -356,7 +375,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       reportError("eliminar gasto", error);
       return false;
     }
-    set({ expenses: get().expenses.filter((e) => e.id !== id) });
+    set({ expenses: get().expenses.filter((e) => e.id !== id), expensesTotalCount: Math.max(0, get().expensesTotalCount - 1) });
     return true;
   },
 

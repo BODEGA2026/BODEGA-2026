@@ -5,13 +5,14 @@ import { Receipt, DollarSign, TrendingUp, Package, Download } from "lucide-react
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { useAppStore } from "@/lib/store/useAppStore";
 import { StatCard } from "@/components/ui/StatCard";
+import { DataCapNotice } from "@/components/ui/DataCapNotice";
 import { fmt } from "@/lib/finance";
 import { exportToExcel } from "@/lib/excel";
 
 const BAR_COLORS = ["#5b8cf7", "#34c759", "#ff9f0a", "#ff3b30", "#8b60ff", "#00bcd4", "#e91e8c", "#ff6b35"];
 
 export function EstadisticasTab() {
-  const { sales, products } = useAppStore();
+  const { sales, products, salesTotalCount } = useAppStore();
 
   const completedSales = sales.filter((s) => s.status === "completed");
   const totalSales = completedSales.length;
@@ -64,6 +65,8 @@ export function EstadisticasTab() {
 
   return (
     <div className="space-y-5">
+      <DataCapNotice loaded={sales.length} total={salesTotalCount} label="ventas" />
+
       <div className="flex items-center justify-end">
         <button className="btn-ghost btn-sm" onClick={handleExport}>
           <Download size={14} /> Exportar

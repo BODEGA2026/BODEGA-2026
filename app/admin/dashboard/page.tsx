@@ -17,6 +17,7 @@ import {
 import { useAppStore } from "@/lib/store/useAppStore";
 import { useBIStore } from "@/lib/store/useBIStore";
 import { StatCard } from "@/components/ui/StatCard";
+import { DataCapNotice } from "@/components/ui/DataCapNotice";
 import { fmt } from "@/lib/finance";
 import { filterSales, filterPrevSales, calcKPIs, calcVariation, type Period } from "@/lib/bi/kpi";
 
@@ -25,7 +26,7 @@ const SEVERITY_ICON = { critical: AlertOctagon, warning: AlertTriangle, info: In
 const SEVERITY_COLOR = { critical: "var(--danger)", warning: "var(--warning)", info: "var(--accent)" };
 
 export default function DashboardPage() {
-  const { sales, products, clients, loadAll } = useAppStore();
+  const { sales, products, clients, loadAll, salesTotalCount } = useAppStore();
   const { alerts, loadBI, generateAlerts } = useBIStore();
   const [period, setPeriod] = useState<Period>("current");
 
@@ -119,6 +120,8 @@ export default function DashboardPage() {
           </button>
         </div>
       </div>
+
+      {period === "all" && <DataCapNotice loaded={sales.length} total={salesTotalCount} label="ventas" />}
 
       {/* KPIs con variación % — mismo motor que Inteligencia de Negocios */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

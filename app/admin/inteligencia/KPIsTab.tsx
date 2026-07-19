@@ -3,11 +3,12 @@
 import { useMemo, useState } from "react";
 import { DollarSign, TrendingUp, Receipt, Users, Package, ShoppingBag, RefreshCw } from "lucide-react";
 import { useAppStore } from "@/lib/store/useAppStore";
+import { DataCapNotice } from "@/components/ui/DataCapNotice";
 import { fmt } from "@/lib/finance";
 import { filterSales, filterPrevSales, calcKPIs, calcVariation, type Period } from "@/lib/bi/kpi";
 
 export function KPIsTab() {
-  const { sales, products, loadAll } = useAppStore();
+  const { sales, products, loadAll, salesTotalCount } = useAppStore();
   const [period, setPeriod] = useState<Period>("current");
   const [channel, setChannel] = useState("all");
   const [category, setCategory] = useState("all");
@@ -47,6 +48,8 @@ export function KPIsTab() {
           <RefreshCw size={14} /> Actualizar
         </button>
       </div>
+
+      {period === "all" && <DataCapNotice loaded={sales.length} total={salesTotalCount} label="ventas" />}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {cards.map((c) => {

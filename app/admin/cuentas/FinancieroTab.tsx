@@ -15,6 +15,7 @@ import {
 import Link from "next/link";
 import { useAppStore } from "@/lib/store/useAppStore";
 import { StatCard } from "@/components/ui/StatCard";
+import { DataCapNotice } from "@/components/ui/DataCapNotice";
 import { fmt } from "@/lib/finance";
 import { exportToExcel } from "@/lib/excel";
 
@@ -24,7 +25,7 @@ function monthKey(iso: string) {
 }
 
 export function FinancieroTab() {
-  const sales = useAppStore((s) => s.sales);
+  const { sales, salesTotalCount } = useAppStore();
   const [from, setFrom] = useState(() => new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10));
   const [to, setTo] = useState(() => new Date().toISOString().slice(0, 10));
   const [applied, setApplied] = useState({ from, to });
@@ -88,6 +89,8 @@ export function FinancieroTab() {
           <Download size={14} /> Excel
         </button>
       </div>
+
+      <DataCapNotice loaded={sales.length} total={salesTotalCount} label="ventas" />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <StatCard icon={DollarSign} value={`$${fmt(income)}`} label="Ingresos Totales (USD)" color="#34c759" />
