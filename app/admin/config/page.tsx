@@ -1,13 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Save, DownloadCloud, UploadCloud, Trash2, ShieldAlert } from "lucide-react";
+import { Save, DownloadCloud, UploadCloud, Trash2, ShieldAlert, CloudCog, FileDown, RefreshCw } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useAppStore } from "@/lib/store/useAppStore";
 import { useBIStore } from "@/lib/store/useBIStore";
 import { toast } from "@/lib/store/useToastStore";
 
 const TABLES = ["products", "clients", "sales", "purchases", "expenses", "accounts", "goals", "alerts"] as const;
+
+interface BackupFile {
+  name: string;
+  createdAt: string | null;
+  sizeKB: number;
+  url: string;
+}
 
 export default function ConfigPage() {
   const { business, saveBusiness, loadAll } = useAppStore();
@@ -23,6 +30,40 @@ export default function ConfigPage() {
     maps_link: "",
     footer_note: "",
   });
+
+  const [autoBackups, setAutoBackups] = useState<BackupFile[]>([]);
+  const [loadingBackups, setLoadingBackups] = useState(true);
+
+  const loadAutoBackups = async () => {
+    setLoadingBackups(true);
+    const supabase = createClient();
+    const { data, error } = await supabase.storage.from("backups").list("", {
+      sortBy: { column: "created_at", order: "desc" },
+    });
+    if (error) {
+      // El bucket puede no existir todavía si aún no se corrió setup-automated-backups.sql
+      setAutoBackups([]);
+      setLoadingBackups(false);
+      return;
+    }
+    const files = (data ?? [])
+      .filter((f) => f.name.endsWith(".json"))
+      .map((f) => {
+        const { data: pub } = supabase.storage.from("backups").getPublicUrl(f.name);
+        return {
+          name: f.name,
+          createdAt: f.created_at,
+          sizeKB: Math.round((f.metadata?.size ?? 0) / 1024),
+          url: pub.publicUrl,
+        };
+      });
+    setAutoBackups(files);
+    setLoadingBackups(false);
+  };
+
+  useEffect(() => {
+    loadAutoBackups();
+  }, []);
 
   useEffect(() => {
     if (business) {
@@ -186,6 +227,43 @@ export default function ConfigPage() {
                 </label>
               </div>
             </div>
+          </div>
+
+          <div className="card">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-[14px] font-semibold uppercase tracking-wide flex items-center gap-1.5" style={{ color: "var(--ink-secondary)" }}>
+                <CloudCog size={15} style={{ color: "var(--accent)" }} /> Respaldos Automáticos
+              </h3>
+              <button className="btn-ghost btn-xs" onClick={loadAutoBackups} aria-label="Actualizar lista">
+                <RefreshCw size={12} />
+              </button>
+            </div>
+            <p className="text-[12.5px] mb-3.5" style={{ color: "var(--ink-muted)" }}>
+              Cada noche (~11 pm hora Venezuela) el sistema guarda un respaldo completo aquí automáticamente, sin que tengas que hacer nada. Se conservan los últimos 30 días.
+            </p>
+            {loadingBackups ? (
+              <p className="text-[12.5px]" style={{ color: "var(--ink-muted)" }}>Cargando...</p>
+            ) : autoBackups.length === 0 ? (
+              <p className="text-[12.5px]" style={{ color: "var(--ink-muted)" }}>
+                Aún no hay respaldos automáticos. El primero se generará esta noche (requiere haber ejecutado <code>setup-automated-backups.sql</code> en Supabase).
+              </p>
+            ) : (
+              <div className="flex flex-col divide-y divide-black/5">
+                {autoBackups.slice(0, 10).map((f) => (
+                  <a
+                    key={f.name}
+                    href={f.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2.5 py-2 text-[12.5px]"
+                  >
+                    <FileDown size={13} style={{ color: "var(--accent)" }} />
+                    <span className="flex-1">{f.name}</span>
+                    <span style={{ color: "var(--ink-muted)" }}>{f.sizeKB} KB</span>
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="card">
