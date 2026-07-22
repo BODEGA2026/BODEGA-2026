@@ -191,7 +191,7 @@ export default function DashboardPage() {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={weeklySales}>
                 <XAxis dataKey="label" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip formatter={(v: number) => `$${fmt(v)}`} />
+                <Tooltip formatter={(v: any) => `$${fmt(Number(v))}`} />
                 <Line type="monotone" dataKey="total" stroke="#5b8cf7" strokeWidth={2.5} dot={{ r: 4, fill: "#5b8cf7" }} />
               </LineChart>
             </ResponsiveContainer>
@@ -212,7 +212,7 @@ export default function DashboardPage() {
                     ))}
                   </Pie>
                   <Legend />
-                  <Tooltip formatter={(v: number) => `$${fmt(v)}`} />
+                  <Tooltip formatter={(v: any) => `$${fmt(Number(v))}`} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (

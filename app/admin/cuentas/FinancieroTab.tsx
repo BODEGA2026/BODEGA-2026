@@ -108,7 +108,7 @@ export function FinancieroTab() {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyData}>
                 <XAxis dataKey="month" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip formatter={(v: number) => `$${fmt(v)}`} />
+                <Tooltip formatter={(v: any) => `$${fmt(Number(v))}`} />
                 <Legend />
                 <Bar dataKey="income" name="Ingresos" fill="#34c759" radius={[8, 8, 0, 0]} />
                 <Bar dataKey="cost" name="Costos" fill="#ff3b30" radius={[8, 8, 0, 0]} />
@@ -124,7 +124,7 @@ export function FinancieroTab() {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={monthlyData}>
                 <XAxis dataKey="month" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip formatter={(v: number) => `$${fmt(v)}`} />
+                <Tooltip formatter={(v: any) => `$${fmt(Number(v))}`} />
                 <Line type="monotone" dataKey="profit" name="Utilidad USD" stroke="#5b8cf7" strokeWidth={2.5} dot={{ r: 4 }} />
               </LineChart>
             </ResponsiveContainer>

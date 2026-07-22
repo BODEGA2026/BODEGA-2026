@@ -91,7 +91,7 @@ export function EstadisticasTab() {
                 <BarChart data={topProducts} layout="vertical" margin={{ left: 8 }}>
                   <XAxis type="number" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={110} axisLine={false} tickLine={false} />
-                  <Tooltip formatter={(v: number) => `${v} unidades`} />
+                  <Tooltip formatter={(v: any) => `${Number(v)} unidades`} />
                   <Bar dataKey="units" radius={[0, 8, 8, 0]}>
                     {topProducts.map((_, i) => (
                       <Cell key={i} fill={BAR_COLORS[i % BAR_COLORS.length]} />
@@ -146,7 +146,7 @@ export function EstadisticasTab() {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={byChannel}>
                 <XAxis dataKey="channel" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip formatter={(v: number) => `$${fmt(v)}`} />
+                <Tooltip formatter={(v: any) => `$${fmt(Number(v))}`} />
                 <Bar dataKey="income" fill="#5b8cf7" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
